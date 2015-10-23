@@ -201,8 +201,8 @@ public class App {
     	
     	base_r1_43.values().saveAsTextFile(PATH_CASOS_CSV_HDFS);
     	
-    	System.out.println("base_r1_spark contiene "+base_r1_43.count()+" registros");
-    	System.out.println(base_r1_43.take(1000));
+//    	System.out.println("base_r1_spark contiene "+base_r1_43.count()+" registros");
+//    	System.out.println(base_r1_43.take(1000));
     	
     	sc.close();
     }

@@ -5,14 +5,28 @@ public interface GNPConstants {
 	static final String WORDS_SEPARATOR = ",";
 	public static final String WORDS_SEPARATOR_2 = "\u0001";
 	
-	static final String ANIO = "2015";
-	static final String MES  = "09";
+	static final String ENERO 		= "01";
+	static final String FEBRERO 	= "02";
+	static final String MARZO 		= "03";
+	static final String ABRIL 		= "04";
+	static final String MAYO 		= "05";
+	static final String JUNIO 		= "06";
+	static final String JULIO 		= "07";
+	static final String AGOSTO 		= "08";
+	static final String SEPTIEMBRE 	= "09";
+	static final String OCTUBRE 	= "10";
+	static final String NOMBIEMBRE 	= "11";
+	static final String DICIEMBRE 	= "12";
+	
+	static final String ANIO_C = "2015";
+	static final String ANIO = "15";
+	static final String MES  = MAYO;
 	
 	//BASES
 	static final String RVASEXAC 			= "/insumos/bases/rvasexac"+MES+ANIO+"/rvasexac"+MES+ANIO+".csv";
-	static final String INGRESOS_NASA 		= "/insumos/bases/ingresos_nasa_"+ANIO+"_sf_sm/ingresos_nasa_"+ANIO+"_sf_sm.csv";
+	static final String INGRESOS_NASA 		= "/insumos/bases/ingresos_nasa_"+ANIO_C+"_sf_sm/ingresos_nasa_"+ANIO_C+"_sf_sm.csv";
 	static final String SALVAMENTOS 		= "/insumos/bases/rsalv_"+MES+ANIO+"/rsalv_"+MES+ANIO+".csv";
-	static final String CRISTALES 			= "/insumos/bases/cristales_2010_"+ANIO+"_"+MES+ANIO+"/cristales_2010_"+ANIO+"_"+MES+ANIO+".csv";
+	static final String CRISTALES 			= "/insumos/bases/cristales_2010_"+ANIO_C+"_"+MES+ANIO+"/cristales_2010_"+ANIO_C+"_"+MES+ANIO+".csv";
 	
 	//CATALOGOS
 	static final String CATALOGO_CATEGORIA 	= "/insumos/catalogos/cat_rvasexac_categoria_"+MES+ANIO+"/cat_rvasexac_categoria_"+MES+ANIO+".csv";
@@ -27,7 +41,7 @@ public interface GNPConstants {
 	public static final String R1_201401 	= "/insumos/catalogos/catalogos_r1_201401/catalogos_r1_201401.csv";
 	public static final String R1_201407 	= "/insumos/catalogos/catalogos_r1_201407/catalogos_r1_201407.csv";
 	public static final String R1_201501 	= "/insumos/catalogos/Catalogos_r1_201501/Catalogos_r1_201501.csv";
-	public static final String HURACANES	= "/insumos/catalogos/siniestros_huracanes_final_3103"+ANIO+"/siniestros_huracanes_final_3103"+ANIO+".csv";
+	public static final String HURACANES	= "/insumos/catalogos/siniestros_huracanes_final_3103"+ANIO_C+"/siniestros_huracanes_final_3103"+ANIO_C+".csv";
 	
 	
 	

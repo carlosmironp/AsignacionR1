@@ -1,19 +1,19 @@
 use insumos;
 
-drop table if exists insumos.rvasexac0515_adiciona_campos;
-drop table if exists insumos.rvasexac0515_pagos_total;
-drop table if exists insumos.rvasexac0515_adiciona_campos_pagos;
-drop table if exists insumos.rvasexac0515_movs_total;
-drop table if exists insumos.rvasexac0515_es_cero;
-drop table if exists insumos.rvasexac0515_ri_menor_6;
-drop table if exists insumos.rvasexac0515_menor_6;
-drop table if exists insumos.rvasexac0515_cristales;
-drop table if exists insumos.rvasexac0515_LCT;
+drop table if exists insumos.rvasexac_adiciona_campos;
+drop table if exists insumos.rvasexac_pagos_total;
+drop table if exists insumos.rvasexac_adiciona_campos_pagos;
+drop table if exists insumos.rvasexac_movs_total;
+drop table if exists insumos.rvasexac_es_cero;
+drop table if exists insumos.rvasexac_ri_menor_6;
+drop table if exists insumos.rvasexac_menor_6;
+drop table if exists insumos.rvasexac_cristales;
+drop table if exists insumos.rvasexac_LCT;
 drop table if exists insumos.cristales2;
-drop table if exists insumos.rvasexac0515_accion;
+drop table if exists insumos.rvasexac_accion;
 
 --Adiciona campos
-create table insumos.rvasexac0515_adiciona_campos as
+create table insumos.rvasexac_adiciona_campos as
 	select 
 rvas.id, rvas.reclama,rvas.poliza,rvas.cto_mto as cto_mto_o,
 case
@@ -25,19 +25,19 @@ rvas.ramo,rvas.imp_mto,rvas.idereg,rvas.cob,rvas.tpomovexa,
 rvas.fecrepexa,rvas.noape,rvas.cve_per,
 rvas.csubramo,rvas.fte_info,rvas.fec_fin,rvas.fec_ini,
 rvas.litigio
-from rvasexac0515_spark rvas; 
-compute stats insumos.rvasexac0515_adiciona_campos;
+from rvasexac_spark rvas; 
+compute stats insumos.rvasexac_adiciona_campos;
 
 --Totaliza pagos 
-create table insumos.rvasexac0515_pagos_total as
+create table insumos.rvasexac_pagos_total as
 select reclama, cob, afe,fte_info, sum(imp_mto) as sum_imp_mto
-from rvasexac0515_adiciona_campos 
+from rvasexac_adiciona_campos 
 where cto_mto ='PP'
 group by reclama, cob, afe, fte_info;
-compute stats insumos.rvasexac0515_pagos_total;
+compute stats insumos.rvasexac_pagos_total;
 
 --Calcula campos pagos
-create table insumos.rvasexac0515_adiciona_campos_pagos as
+create table insumos.rvasexac_adiciona_campos_pagos as
 select 
 ac.id, ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.fec_ocu,ac.fec_mov,ac.cto_mto_o,
 ac.afe,ac.ramo,ac.imp_mto,ac.idereg,ac.cob,
@@ -53,19 +53,19 @@ end pag_dif_c,
 case 
    when pt.sum_imp_mto is not null and pt.sum_imp_mto <= 6000 then 'S'
 end p_men_6
-from rvasexac0515_adiciona_campos ac
-left join rvasexac0515_pagos_total pt on
+from rvasexac_adiciona_campos ac
+left join rvasexac_pagos_total pt on
 pt.reclama=ac.reclama and pt.cob=ac.cob and pt.fte_info=ac.fte_info and pt.afe=ac.afe;
 
 --Totaliza movimiento RI,RE,A+,A-
-create table insumos.rvasexac0515_movs_total as
+create table insumos.rvasexac_movs_total as
 select reclama, cob, afe,fte_info, sum(imp_mto) as sum_imp_mto
-from rvasexac0515_adiciona_campos 
+from rvasexac_adiciona_campos 
 where cto_mto ='RI' or cto_mto ='A+' or cto_mto ='A-' or cto_mto ='RE'
 group by reclama, cob, afe, fte_info;
 
 --Calcula campos es_cero
-create table insumos.rvasexac0515_es_cero as
+create table insumos.rvasexac_es_cero as
 select 
 ac.id, ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
@@ -77,19 +77,19 @@ case
     when pt.reclama is not null and pt.sum_imp_mto=0 then 'S'
 end es_cero,
 ac.mov_pagos,ac.pag_dif_c,ac.p_men_6
-from rvasexac0515_adiciona_campos_pagos ac
-left join rvasexac0515_movs_total pt on
+from rvasexac_adiciona_campos_pagos ac
+left join rvasexac_movs_total pt on
 pt.reclama=ac.reclama and pt.cob=ac.cob and pt.fte_info=ac.fte_info and pt.afe=ac.afe;
 
 --RI menor a 6000
-create table insumos.rvasexac0515_ri_menor_6 as
+create table insumos.rvasexac_ri_menor_6 as
 select reclama, cob, afe,fte_info, sum(imp_mto) as sum_imp_mto
-from rvasexac0515_adiciona_campos 
+from rvasexac_adiciona_campos 
 where cto_mto ='RI' and imp_mto <=6000 and cob ='DM'
 group by reclama, cob, afe, fte_info;
 
 --Calcula ri menor 6000
-create table insumos.rvasexac0515_menor_6 as
+create table insumos.rvasexac_menor_6 as
 select 
 ac.id, ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
@@ -101,24 +101,24 @@ case
     when pt.reclama is not null and pt.sum_imp_mto<=6000 then 'S'
 end as menor_6,
 ac.mov_pagos,ac.pag_dif_c,ac.p_men_6
-from rvasexac0515_es_cero ac
-left join rvasexac0515_ri_menor_6 pt on
+from rvasexac_es_cero ac
+left join rvasexac_ri_menor_6 pt on
 pt.reclama=ac.reclama and pt.cob=ac.cob and pt.fte_info=ac.fte_info and pt.afe=ac.afe;
 
 --Buscamos aquellos registros con las caracteristicas especificas, para determinar si es un cristal Muchos registros no se encuentran en la tabla de cristales pero son identificados implicitamente por que son:DM, RI, 1759
-create table cristales2 as select distinct reservas.reclama from rvasexac0515 reservas where reservas.cto_mto='RI' and reservas.cob='DM' and imp_mto=1759;
+create table cristales2 as select distinct reservas.reclama from rvasexac0915 reservas where reservas.cto_mto='RI' and reservas.cob='DM' and imp_mto=1759;
 COMPUTE STATS insumos.cristales2;
 
 
 --Marca los cristales
-create table insumos.rvasexac0515_cristales as
+create table insumos.rvasexac_cristales as
 select rvas.*,
 case
    when cris1.reclama is not null then 'S'
    when cris2.reclama is not null then 'S'
 end as cris
-from rvasexac0515_menor_6 rvas
-left join cristales_2010_2015_0515_l cris1 on cris1.reclama=rvas.reclama
+from rvasexac_menor_6 rvas
+left join cristales_2010_2015_0915_l cris1 on cris1.reclama=rvas.reclama
 left join cristales2 cris2 on cris2.reclama=rvas.reclama;
 
 --Limpia litigios, condusef y terminados
@@ -132,7 +132,7 @@ create table insumos.terminados_l as
 select reclama_b, count(*) as cuenta from terminados group by reclama_b;
 
 --Marca litigios, condusef y terminados
-create table insumos.rvasexac0515_LCT as
+create table insumos.rvasexac_LCT as
 select 
 rvas.*,
 case 
@@ -140,13 +140,13 @@ case
    when cond.reclama_b is not null then 'C'
    when term.reclama_b is not null then 'T'
 end as lit
-from rvasexac0515_cristales rvas
+from rvasexac_cristales rvas
 left join litigios_l liti on liti.reclama_b=rvas.reclama
 left join condusef_l cond on cond.reclama_b=rvas.reclama
 left join terminados_l term on term.reclama_b=rvas.reclama;
 
 --Calcula la accion a tomar para la reconstruccion
-create table insumos.rvasexac0515_accion as
+create table insumos.rvasexac_accion as
 select
 ac.id, ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
@@ -164,17 +164,17 @@ case
 end as accion,
 ac.p_men_6
 from rvasexac0515_LCT ac;
-compute stats insumos.rvasexac0515_accion;
+compute stats insumos.rvasexac_accion;
 
 drop table if exists inusmos.litigios_l;
 drop table if exists inusmos.condusef_l;
 drop table if exists inusmos.terminados_l;
-drop table if exists insumos.rvasexac0515_adiciona_campos;
-drop table if exists insumos.rvasexac0515_pagos_total;
-drop table if exists insumos.rvasexac0515_adiciona_campos_pagos;
-drop table if exists insumos.rvasexac0515_movs_total;
-drop table if exists insumos.rvasexac0515_es_cero;
-drop table if exists insumos.rvasexac0515_ri_menor_6;
-drop table if exists insumos.rvasexac0515_menor_6;
-drop table if exists insumos.rvasexac0515_cristales;
-drop table if exists insumos.rvasexac0515_LCT;
+drop table if exists insumos.rvasexac_adiciona_campos;
+drop table if exists insumos.rvasexac_pagos_total;
+drop table if exists insumos.rvasexac_adiciona_campos_pagos;
+drop table if exists insumos.rvasexac_movs_total;
+drop table if exists insumos.rvasexac_es_cero;
+drop table if exists insumos.rvasexac_ri_menor_6;
+drop table if exists insumos.rvasexac_menor_6;
+drop table if exists insumos.rvasexac_cristales;
+drop table if exists insumos.rvasexac_LCT;
