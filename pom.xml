@@ -1,0 +1,141 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>mx.com.gnp</groupId>
+  <artifactId>AsignacionR1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>AsignacionR1</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <cdh.spark.version>1.2.0</cdh.spark.version>
+    <cdh.hive.version>0.13.1-cdh5.2.1</cdh.hive.version>
+    <cdh.hadoop.version>2.5.0-cdh5.2.1</cdh.hadoop.version>
+    <junit.version>3.8.1</junit.version>
+  </properties>
+
+  <dependencies>
+  	
+  	<dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-core_2.10</artifactId>
+		<version>${cdh.spark.version}</version>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.apache.hive</groupId>
+		<artifactId>hive-jdbc</artifactId>
+		<version>${cdh.hive.version}</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.apache.hadoop</groupId>
+		<artifactId>hadoop-common</artifactId>
+		<version>${cdh.hadoop.version}</version>
+	</dependency>
+  
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+  <pluginManagement>
+   </pluginManagement>
+   
+   <plugins>
+   		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+			</configuration>
+		</plugin>
+		
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<version>2.4</version>
+			<!--  <configuration>
+				<outputDirectory>${basedir}</outputDirectory>
+			</configuration>-->
+		</plugin>
+		
+		<plugin>
+			<artifactId>maven-clean-plugin</artifactId>
+			<version>2.6.1</version>
+			<configuration>
+				<filesets>
+					<fileset>
+						<directory>.</directory>
+						<includes>
+							<include>*.jar</include>
+						</includes>
+						<followSymlinks>false</followSymlinks>
+					</fileset>
+				</filesets>
+			</configuration>
+		</plugin>
+   
+   
+   </plugins>
+  </build>
+  <repositories>
+  	
+  	<repository>
+		<id>cdh.repo</id>
+		<url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+		<name>Cloudera Repositories</name>
+		<snapshots>
+			<enabled>false</enabled>
+		</snapshots>
+	</repository>
+	
+	<repository>
+		<id>cdh.snapshots.repo</id>
+		<url>https://repository.cloudera.com/artifactory/libs-snapshot-local</url>
+		<name>Cloudera Snapshots Repository</name>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+		<releases>
+			<enabled>false</enabled>
+		</releases>
+	</repository>
+  
+  </repositories>
+  
+  <profiles>
+    <profile>
+      <id>windows_profile</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+      </properties>
+    </profile>
+    <profile>
+      <id>osx_profile</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
+      </properties>
+    </profile>
+  </profiles>
+</project>
