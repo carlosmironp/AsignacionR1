@@ -1,5 +1,0 @@
-scp -i id_sellcom_gnppilot /Users/mfragoso/Documents/GNP/GNPWorkspace/UltimoMovimiento/asignarR1.sh sellcom@52.88.1.223:/home/sellcom/projects/ReconstruirReservas/asignarR1/asignarR1.sh
-scp -i id_sellcom_gnppilot /Users/mfragoso/Documents/GNP/GNPWorkspace/UltimoMovimiento/ImpalaScripts/AsignarR1_0001.sql sellcom@52.88.1.223:/home/sellcom/projects/ReconstruirReservas/asignarR1/AsignarR1_0001.sql
-scp -i id_sellcom_gnppilot /Users/mfragoso/Documents/GNP/GNPWorkspace/UltimoMovimiento/ImpalaScripts/AsignarR1_0002.sql sellcom@52.88.1.223:/home/sellcom/projects/ReconstruirReservas/asignarR1/AsignarR1_0002.sql
-scp -i id_sellcom_gnppilot /Users/mfragoso/Documents/GNP/GNPWorkspace/UltimoMovimiento/ImpalaScripts/limpiaRvasOriginal_0001.sql sellcom@52.88.1.223:/home/sellcom/projects/ReconstruirReservas/asignarR1/limpiaRvasOriginal_0001.sql
-scp -i id_sellcom_gnppilot /Users/mfragoso/Documents/GNP/GNPWorkspace/UltimoMovimiento/target/UltimoMovimiento-0.0.1-SNAPSHOT.jar sellcom@52.88.1.223:/home/sellcom/projects/ReconstruirReservas/asignarR1/UltimoMovimiento-0.0.1-SNAPSHOT.jar
