@@ -1,4 +1,6 @@
-package mx.com.gnp;
+package mx.com.gnp.db;
+
+import mx.com.gnp.GNPConstants;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;

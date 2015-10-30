@@ -1,6 +1,15 @@
 package mx.com.gnp;
 
 
+import mx.com.gnp.db.CatalogoR1;
+import mx.com.gnp.db.Catalogos_R1;
+import mx.com.gnp.db.Categoria;
+import mx.com.gnp.db.Cristales;
+import mx.com.gnp.db.IngresosNasa;
+import mx.com.gnp.db.Salvamentos;
+import mx.com.gnp.operations.ActualizaMeses;
+import mx.com.gnp.operations.RvasexacOperations;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
@@ -15,9 +24,10 @@ import scala.Tuple2;
  */
 public class App {
 	
-	static final String PATH_RVASEXAC_CSV_HDFS	= "/reconstruccion/rvasexac_id";
-	static final String PATH_SALDO_CSV_HDFS	= "/reconstruccion/base_r1_spark";
-	static final String PATH_CASOS_CSV_HDFS	= "/reconstruccion/base_r1_casos_spark";
+	static final String PATH_RVASEXAC_CSV_HDFS					= "/reconstruccion/rvasexac_id";
+	static final String PATH_SALDO_CSV_HDFS						= "/reconstruccion/base_r1_spark";
+	static final String PATH_CASOS_CSV_HDFS						= "/reconstruccion/base_r1_casos_spark";
+	static final String PATH_BASE_CAMBIOS_TOT_CSV_HDFS			= "/reconstruccion/base_cambios_tot_spark";
 	
     public static void main( String[] args ){
     	JavaSparkContext sc = new JavaSparkContext();
@@ -199,10 +209,27 @@ public class App {
     	JavaPairRDD<String, Iterable<String>> base_r1_42 = rvasexacOps.saldo1(base_r1_41);
     	JavaPairRDD<String,String> base_r1_43 = rvasexacOps.desagrupaValores(base_r1_42);
     	
+    	//Ponemos la base final con los casos en el formato de struct depura
+    	JavaPairRDD<String,String> base_r1_44 = rvasexacOps.strucDepura(base_r1_43);
+    	
+    	
+    	//Primer punto de control para totalizar y revisar Casos de base_r1
     	base_r1_43.values().saveAsTextFile(PATH_CASOS_CSV_HDFS);
     	
-//    	System.out.println("base_r1_spark contiene "+base_r1_43.count()+" registros");
-//    	System.out.println(base_r1_43.take(1000));
+    	//Actualiza meses
+    	ActualizaMeses actualizaMeses = new ActualizaMeses(sc);
+    	JavaPairRDD<String, String> base_cambios_tot_ant = actualizaMeses.getDM_1213().union(actualizaMeses.getGM_1213().union(actualizaMeses.getRC_1213().union(actualizaMeses.getRT_1213())));
+    	
+    	//Base anterior unida limpia
+    	JavaPairRDD<String, String> base_r1_45 = base_cambios_tot_ant.subtractByKey(base_r1_44);
+    	    	
+    	//Unimos la base total anterior limpia con la reconstruida
+    	JavaPairRDD<String, String> base_r1_46 = base_r1_45.union(base_r1_44);
+    	
+    	base_r1_46.values().saveAsTextFile(PATH_BASE_CAMBIOS_TOT_CSV_HDFS);
+    	
+    	System.out.println("base_r1_46 contiene "+base_r1_46.count()+" registros");
+    	System.out.println(base_r1_46.take(10));
     	
     	sc.close();
     }

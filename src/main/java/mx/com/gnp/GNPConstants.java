@@ -28,6 +28,12 @@ public interface GNPConstants {
 	static final String SALVAMENTOS 		= "/insumos/bases/rsalv_"+MES+ANIO+"/rsalv_"+MES+ANIO+".csv";
 	static final String CRISTALES 			= "/insumos/bases/cristales_2010_"+ANIO_C+"_"+MES+ANIO+"/cristales_2010_"+ANIO_C+"_"+MES+ANIO+".csv";
 	
+	//BASES ANTERIORES
+	static final String DM_1213 				= "/insumos/bases/dm_1213/dm_1213.csv";
+	static final String GM_1213 				= "/insumos/bases/GM_1213/GM_1213.csv";
+	static final String RC_1213 				= "/insumos/bases/RC_1213/RC_1213.csv";
+	static final String RT_1213 				= "/insumos/bases/RT_1213/RT_1213.csv";
+	
 	//CATALOGOS
 	static final String CATALOGO_CATEGORIA 	= "/insumos/catalogos/cat_rvasexac_categoria_"+MES+ANIO+"/cat_rvasexac_categoria_"+MES+ANIO+".csv";
 	static final String CATALOGO_R1 		= "/insumos/catalogos/catalogo_r1/catalogo_r1.csv";
@@ -109,5 +115,39 @@ public interface GNPConstants {
 	
 	static final Long RANGO 				= 120L;
 	static final String ULTIMO_MOVIMIENTO 	= "U";
+	
+	
+	//ORDEN DE CAMPOS DE STRUC_DEPURA.DBF
+	static final int CATEGO_R1_SD 	= 0;
+	static final int IDEREG_SD 		= 1;
+	static final int RECLAMA_SD 	= 2;
+	static final int CVE_PER_SD 	= 3;
+	static final int CTO_MTO_SD 	= 4;
+	static final int CTO_MTO2_SD 	= 5;
+	static final int FEC_OCU_SD 	= 6;
+	static final int FEC_MOV_SD 	= 7;
+	static final int AFE_SD 		= 8;
+	static final int COB_SD 		= 9;
+	static final int CERO_SD 		= 10;
+	static final int DIAS_SD 		= 11;
+	static final int R1_SD 			= 12;
+	static final int IMP_MTO_SD 	= 13;
+	static final int SALDO_SD 		= 14;
+	static final int CTO1_SD 		= 15;
+	static final int IMP1_SD 		= 16;
+	static final int SALDO1_SD 		= 17;
+	static final int R1_B_SD 		= 18;
+	static final int FEC_MOV1_SD 	= 19;
+	static final int DIAS1_SD 		= 20;
+	static final int R1_NUEVA_SD 	= 21;
+	static final int FECMOV2_SD 	= 22;
+	static final int ES_R1_SD 		= 23;
+	static final int CONSECU_SD 	= 24;
+	static final int CASO_SD 		= 25;
+	static final int DEPURA_SD 		= 26;
+	static final int CUENTA_SD 		= 27;
+	public static int REGIS_NVO_SD	= 28;
+	static final int CRIS_SD 		= 29;
+	static final int RECONS_SD 		= 30;
 
 }

@@ -5,7 +5,7 @@ drop table if exists insumos.base_cambios_tot_ant_ca;
 drop table if exists insumos.base_r1_ca_Recons_Ante;
 drop table if exists insumos.base_cambios_tot;
 drop table if exists insumos.rvas_limpio_esta_c;
-drop table if exists insumos.rvasexac0515_sin_ingresos;
+drop table if exists insumos.rvasexac_sin_ingresos;
 drop table if exists insumos.base_cambios_tot_rec_campos;
 drop table if exists insumos.base_cambios_tot_camb_proceden;
 drop table if exists insumos.rvas_limpio_marca_periodos;
@@ -14,13 +14,13 @@ drop table if exists insumos.rvasexac_c30_ca;
 drop table if exists insumos.rvasexac_c30_ca_tot;
 drop table if exists insumos.base_cambios_tot_ant_ca_l;
 drop table if exists insumos.siniestros_huracanes_final_31032015_l;
-drop table if exists insumos.rvasexac0515_sin_cat_antes_mov20141025_ca;
+drop table if exists insumos.rvasexac_sin_cat_antes_mov20141025_ca;
 drop table if exists insumos.ri_25102014_ca;
 drop table if exists insumos.ri_20141025_todos_mov_ca;
 drop table if exists insumos.ri_20141025_mov_ant_ca;
 drop table if exists insumos.ri_20141025_mov_ant_ca;
 drop table if exists insumos.tot_mov_nac_20141025_ca;
-drop table if exists insumos.rvasexac0515_sin_cat_reconstruccion_final_ca;
+drop table if exists insumos.rvasexac_sin_cat_reconstruccion_final_ca;
 
 
  -- De la base anterior sacamos los campos que solo corresponden para que podamos hacer el union
@@ -38,7 +38,7 @@ compute stats insumos.base_cambios_tot_ant_ca;
 -- Calculamos cuantas llaves de la reconstruccion actual estan en la base_anterior_unida 
 create table insumos.base_r1_ca_Recons_Ante as 
 select base_r1_spark.reclama,base_r1_spark.cob,base_r1_spark.afe, count(*) from base_cambios_tot_ant_ca bases_ant
-join  insumos.base_r1_0515_casos_spark base_r1_spark on 
+join  insumos.base_r1_casos_spark base_r1_spark on 
 base_r1_spark.reclama=bases_ant.reclama and base_r1_spark.cob=bases_ant.cob and base_r1_spark.afe=bases_ant.afe
 group by base_r1_spark.reclama,base_r1_spark.cob,base_r1_spark.afe;
 
@@ -63,11 +63,11 @@ cloud.id, cloud.catego_r1,cast(cloud.idereg as bigint) as idereg,cloud.reclama,c
 cloud.fec_mov,cloud.afe,cloud.cob,'' as cero,cloud.dias,cloud.r1,cloud.imp_mto,cloud.saldo,'' as cto1,
 cloud.imp1,cloud.saldo1,'' as r1_b,null as fec_mov1,null as dias1,cast(cloud.r1_nueva as decimal(12,2)),
 cast(cloud.fec_mov as bigint) as fec_mov2,'' es_r1,'' as consecu,cloud.caso,'' as depura,null as cuenta,'' as regis_nvo, cloud.fte_info
-from insumos.base_r1_0515_casos_spark cloud;
+from insumos.base_r1_casos_spark cloud;
 
 -- Filtramos de revas limpio los ingresos y guardamos la tabla temporal en
-create table insumos.rvasexac0515_sin_ingresos as
-select * from rvasexac0515_accion where accion<>'IN' and accion<>'NC';
+create table insumos.rvasexac_sin_ingresos as
+select * from rvasexac_accion where accion<>'IN' and accion<>'NC';
 
 -- Recuperamos los campos calculados en limpia revas aqui pudimos hacer join por el idereg lo cual facilito la relacion uno a uno
 create table insumos.base_cambios_tot_rec_campos as
@@ -76,7 +76,8 @@ rt.catego_r1,rt.idereg, rt.reclama,rt.cve_per,
 rt.cto_mto as cto_mto_o,
 rt.fec_ocu,rt.fec_mov,rt.afe,rt.cob,rt.cero,rt.dias,rt.r1,
 rt.imp_mto as imp_to_o,
-rt.saldo, rt.cto1,rt.imp1,rt.saldo1,rt.r1_b,rt.fec_mov1,
+rt.saldo, rt.cto1,
+rt.saldo1,rt.r1_b,rt.fec_mov1,
 rt.r1_nueva,rt.fec_mov2,rt.es_r1,rt.consecu,rt.caso,
 rt.cuenta,rt.regis_nvo,rsi.cris,rsi.csubramo,rsi.fte_info,
 rsi.poliza,rsi.cau_cto,rsi.ramo,rsi.noape,rsi.mov_pagos,
@@ -115,16 +116,17 @@ case
   else ''
 end as tpomovexa,
 rt.imp1 as imp_mto,
+rt.imp1,
 rt.cto_mto2 as cto_mto
 from base_cambios_tot rt
-left join rvasexac0515_sin_ingresos rsi on
+left join rvasexac_sin_ingresos rsi on
 rsi.reclama=rt.reclama and rsi.cob=rt.cob and rsi.afe=rt.afe
 and cast(rsi.idereg as bigint)=rt.idereg and rsi.fec_mov=rt.fec_mov and rsi.cto_mto=rt.cto_mto;
 
 -- Sacamos a base cambios los movimientos que proceden y que se van a sustituir como lo marca el procedimiento cambios proceden
 create table insumos.base_cambios_tot_camb_proceden as 
 select *  from base_cambios_tot_rec_campos base_cambios_tot 
-where base_cambios_tot.imp1<>0 and base_cambios_tot.mov_pos<>'S' and base_cambios_tot.cto_mto='RI';
+where base_cambios_tot.imp1<>0 and base_cambios_tot.mov_pos<>'S' and base_cambios_tot.es_rvas='S';
 
 
 -- Marcacmos los periodos en el rvas limpio 
@@ -147,7 +149,7 @@ case
    when (rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>=20130701) then 'BC'
    when rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>20120101 then 'C' 
 end as llave
-from rvasexac0515_accion rvas_limpio;
+from rvasexac_accion rvas_limpio;
 
 -- calculamos el campo esta_c sobre reservas limpio
 create table insumos.rvas_limpio_esta_c as
@@ -222,7 +224,7 @@ bct_cp.fec_ocu,
 bct_cp.fec_mov,
 bct_cp.afe,
 bct_cp.ramo,
-bct_cp.imp_mto,
+bct_cp.imp1 as imp_mto,
 bct_cp.idereg,
 bct_cp.cob,
 bct_cp.tpomovexa,
@@ -252,7 +254,7 @@ from base_cambios_tot_camb_proceden bct_cp where  bct_cp.c30='C' and bct_cp.es_r
 create table insumos.siniestros_huracanes_final_31032015_l as 
 select reclama, fte_info, count(*) as cuenta from siniestros_huracanes_final_31032015 group by reclama,fte_info;
 
-create table insumos.rvasexac0515_sin_cat_antes_mov20141025_ca as
+create table insumos.rvasexac_sin_cat_antes_mov20141025_ca as
 select 
 c_30.*
 from rvasexac_c30_ca_tot c_30
@@ -279,7 +281,7 @@ where ant.reclama is null;
 
 
 -- Unimos las bases finales 
-create table insumos.rvasexac0515_sin_cat_reconstruccion_final_ca as
+create table insumos.rvasexac_sin_cat_reconstruccion_final_ca as
 select  
 sin_cat.reclama,
 sin_cat.poliza,
@@ -315,7 +317,7 @@ sin_cat.ramo,
 '' as cat,
 '' as mov_man
 from 
-rvasexac0515_sin_cat_antes_mov20141025_ca sin_cat
+rvasexac_sin_cat_antes_mov20141025_ca sin_cat
 union 
 select 
 tot.reclama,
@@ -355,22 +357,21 @@ from tot_mov_nac_20141025_ca tot;
 
 -- BOrramos las bases que no son necesarias
 ---drop table if exists insumos.dm2_1213_ca;
---drop table if exists insumos.base_cambios_tot_ant_ca;
---drop table if exists insumos.base_r1_ca_Recons_Ante;
---drop table if exists insumos.base_cambios_tot;
---drop table if exists insumos.rvasexac0515_sin_ingresos;
---drop table if exists insumos.base_cambios_tot_camb_proceden;
---drop table if exists insumos.rvas_limpio_marca_periodos;
---drop table if exists insumos.rvas_limpio_para_borrar;
---drop table if exists insumos.rvasexac_c30_ca;
---drop table if exists insumos.siniestros_huracanes_final_31032015_l;
---drop table if exists insumos.rvasexac0515_sin_cat_antes_mov20141025_ca;
---drop table if exists insumos.ri_25102014_ca;
---drop table if exists insumos.ri_20141025_todos_mov_ca;
---drop table if exists insumos.ri_20141025_mov_ant_ca;
---drop table if exists insumos.ri_20141025_mov_ant_ca;
---drop table if exists insumos.tot_mov_nac_20141025_ca;
-
---drop table if exists insumos.base_r1_ca_adi_campos;
---drop table if exists insumos.base_cambios_tot_ant_ca_l;
---drop table if exists insumos.base_r1_0515_spark_temp;
+drop table if exists insumos.base_cambios_tot_ant_ca;
+drop table if exists insumos.base_r1_ca_Recons_Ante;
+drop table if exists insumos.base_cambios_tot;
+drop table if exists insumos.rvasexac_sin_ingresos;
+drop table if exists insumos.base_cambios_tot_camb_proceden;
+drop table if exists insumos.rvas_limpio_marca_periodos;
+drop table if exists insumos.rvas_limpio_para_borrar;
+drop table if exists insumos.rvasexac_c30_ca;
+drop table if exists insumos.siniestros_huracanes_final_31032015_l;
+drop table if exists insumos.rvasexac_sin_cat_antes_mov20141025_ca;
+drop table if exists insumos.ri_25102014_ca;
+drop table if exists insumos.ri_20141025_todos_mov_ca;
+drop table if exists insumos.ri_20141025_mov_ant_ca;
+drop table if exists insumos.ri_20141025_mov_ant_ca;
+drop table if exists insumos.tot_mov_nac_20141025_ca;
+drop table if exists insumos.base_r1_ca_adi_campos;
+drop table if exists insumos.base_cambios_tot_ant_ca_l;
+drop table if exists insumos.base_r1__spark_temp;

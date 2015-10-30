@@ -4,6 +4,7 @@ inicio=`date +%s`
 hdfs dfs -rm -r /reconstruccion/rvasexac_id/
 hdfs dfs -rm -r /reconstruccion/base_r1_spark/
 hdfs dfs -rm -r /reconstruccion/base_r1_casos_spark/
+hdfs dfs -rm -r /reconstruccion/base_cambios_tot_spark/
 
 spark-submit \
         --class mx.com.gnp.App \
@@ -19,12 +20,14 @@ spark-submit \
 hdfs dfs -chmod 777 /reconstruccion/rvasexac_id/
 hdfs dfs -chmod 777 /reconstruccion/base_r1_spark/
 hdfs dfs -chmod 777 /reconstruccion/base_r1_casos_spark/
+hdfs dfs -chmod 777 /reconstruccion/base_cambios_tot_spark/
 
 impala-shell -i dn1.pilot.gnp -f createTables.sql
 
 hdfs dfs -rm -r /reconstruccion/rvasexac_id/
 hdfs dfs -rm -r /reconstruccion/base_r1_spark/
 hdfs dfs -rm -r /reconstruccion/base_r1_casos_spark/
+hdfs dfs -rm -r /reconstruccion/base_cambios_tot_spark/
 
 fin=`date +%s`
 let total=$fin-$inicio

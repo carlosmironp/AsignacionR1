@@ -1,10 +1,11 @@
-package mx.com.gnp;
+package mx.com.gnp.operations;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import mx.com.gnp.GNPConstants;
 import mx.com.gnp.util.GenericUtils;
 
 import org.apache.commons.collections.IteratorUtils;
@@ -1506,6 +1507,63 @@ public class RvasexacOperations implements GNPConstants{
 			return historiaUM;
 		}
 	};
+	
+	/**
+	 * Pone en orden de struc depura cada unos d elos registros reconstruidos.
+	 * @param movimientos
+	 * @return
+	 */
+	public JavaPairRDD<String, String> strucDepura(JavaPairRDD<String, String> movimientos){
+		return movimientos.mapToPair(STRUC_DEPURA);
+		 	
+	}
+	private static final PairFunction<Tuple2<String,String>, String, String> STRUC_DEPURA = new PairFunction<Tuple2<String,String>,String,String>(){
+		private static final long serialVersionUID = 1L;
+		public Tuple2<String, String> call(Tuple2<String,String> record) throws Exception {
+			Tuple2<String, String> tupla2 = null;
+			String value = record._2;
+			String[] fields = value.split(WORDS_SEPARATOR);
+			
+			String strucDepura = fields[CATEGO_R1]+WORDS_SEPARATOR+
+								 fields[IDEREG]+WORDS_SEPARATOR+
+								 fields[RECLAMA]+WORDS_SEPARATOR+
+								 fields[CVE_PER]+WORDS_SEPARATOR+
+								 fields[CTO_MTO]+WORDS_SEPARATOR+
+								 fields[CTO_MTO2]+WORDS_SEPARATOR+
+								 fields[FEC_OCU]+WORDS_SEPARATOR+
+								 fields[FEC_MOV]+WORDS_SEPARATOR+
+								 fields[AFE]+WORDS_SEPARATOR+
+								 fields[COB]+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 fields[DIAS]+WORDS_SEPARATOR+
+								 fields[R1]+WORDS_SEPARATOR+
+								 fields[IMP_MTO]+WORDS_SEPARATOR+
+								 fields[SALDO]+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 fields[IMP1]+WORDS_SEPARATOR+
+								 fields[SALDO1]+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 fields[R1_NUEVA]+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+
+								 fields[ID]+WORDS_SEPARATOR+
+								 fields[CASO]+WORDS_SEPARATOR+
+								 " "+WORDS_SEPARATOR+    //Depura
+								 " "+WORDS_SEPARATOR+   //Cuenta
+								 " "+WORDS_SEPARATOR+   //REGIS_NVO_ANT
+								 fields[CRIS]+WORDS_SEPARATOR+ //CRIS
+								 " ";          //RECONS_SD
+			
+			
+			tupla2 = new Tuple2<String, String>( fields[RECLAMA]+fields[COB]+fields[AFE]  , strucDepura);
+			return tupla2;
+		}
+	};
+	
+	
+	
 	
 	private static String mapCasoSintetico(String[] fields, String cto_mto){
 		return fields[ID]+WORDS_SEPARATOR+ 

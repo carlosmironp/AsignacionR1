@@ -1,4 +1,6 @@
-package mx.com.gnp;
+package mx.com.gnp.db;
+
+import mx.com.gnp.GNPConstants;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -7,40 +9,35 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import scala.Tuple2;
 
-public class Catalogos_R1 implements GNPConstants{
+public class Cristales implements GNPConstants {
 	
-	public static final int CATEGO_R1 	= 0;
-	public static final int COB       	= 1;
-	public static final int MODELO_A  	= 3;
-	
-	public static final int VALOR 		= 2;
-	
-	
+	public static final int RECLAMA 	= 13;
 	private JavaSparkContext sc;
-	private String catalogName;
 	
-	public Catalogos_R1(JavaSparkContext sc, String catalogName){
-		this.catalogName = catalogName;
+	public Cristales(JavaSparkContext sc){
 		this.sc = sc;
 	}
-	
 	/**
 	 * Obtiene los valores para el CATALOGO DE CRISTALES
 	 * @return
 	 */
-	public JavaPairRDD<String, String>  getCatalog_R1_Unicos(){
-		JavaRDD<String> catalog = this. sc.textFile(this.catalogName);
-		JavaPairRDD<String, String> catalog_c = catalog.mapToPair(INDEX);
-		JavaPairRDD<String, Iterable<String> > catalog_c_1 = catalog_c.groupByKey();
-		JavaPairRDD<String, String> catalog_c_U = catalog_c_1.mapToPair(UNIQUE_FIRST);
-		return catalog_c_U;
+	public JavaPairRDD<String, String>  getCristales_Unicos(){
+		JavaRDD<String> cristales = this. sc.textFile(CRISTALES);
+		JavaPairRDD<String, String> cat_cristales = cristales.mapToPair(INDEX);
+		JavaPairRDD<String, Iterable<String> > cat_cristales_1 = cat_cristales.groupByKey();
+		JavaPairRDD<String, String> cat_cristales_U = cat_cristales_1.mapToPair(UNIQUE_FIRST);
+		return cat_cristales_U;
 	}
 	private static final PairFunction<String, String, String> INDEX = new PairFunction<String, String, String>() {
 		private static final long serialVersionUID = 1L;
 		public Tuple2<String, String> call(String valores) throws Exception {
 			Tuple2<String, String> tupla2 = null;
 			String[] fields = valores.split(WORDS_SEPARATOR_2);
-			tupla2 = new Tuple2<String, String>(fields[CATEGO_R1]+fields[COB]+fields[MODELO_A], fields[VALOR]);
+			if(fields.length<14){
+				valores +=WORDS_SEPARATOR_2+" ";
+				fields = valores.split(WORDS_SEPARATOR_2);
+			}
+			tupla2 = new Tuple2<String, String>(fields[RECLAMA], fields.length+"");
 			return tupla2;
 		}
 	};

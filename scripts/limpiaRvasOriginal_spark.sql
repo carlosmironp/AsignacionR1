@@ -11,6 +11,10 @@ drop table if exists insumos.rvasexac_cristales;
 drop table if exists insumos.rvasexac_LCT;
 drop table if exists insumos.cristales2;
 drop table if exists insumos.rvasexac_accion;
+drop table if exists insumos.litigios_l;
+drop table if exists insumos.condusef_l;
+drop table if exists insumos.terminados_l;
+drop table if exists insumos.cristales_2010_2015_0915_l;
 
 --Adiciona campos
 create table insumos.rvasexac_adiciona_campos as
@@ -109,6 +113,7 @@ pt.reclama=ac.reclama and pt.cob=ac.cob and pt.fte_info=ac.fte_info and pt.afe=a
 create table cristales2 as select distinct reservas.reclama from rvasexac0915 reservas where reservas.cto_mto='RI' and reservas.cob='DM' and imp_mto=1759;
 COMPUTE STATS insumos.cristales2;
 
+create table insumos.cristales_2010_2015_0915_l as select distinct reclama from cristales_2010_2015_0915;
 
 --Marca los cristales
 create table insumos.rvasexac_cristales as
@@ -163,12 +168,13 @@ case
    when ac.cto_mto<>'IN' then 'CA'
 end as accion,
 ac.p_men_6
-from rvasexac0515_LCT ac;
+from rvasexac_LCT ac;
 compute stats insumos.rvasexac_accion;
 
-drop table if exists inusmos.litigios_l;
-drop table if exists inusmos.condusef_l;
-drop table if exists inusmos.terminados_l;
+drop table if exists insumos.cristales_2010_2015_0915_l;
+drop table if exists insumos.litigios_l;
+drop table if exists insumos.condusef_l;
+drop table if exists insumos.terminados_l;
 drop table if exists insumos.rvasexac_adiciona_campos;
 drop table if exists insumos.rvasexac_pagos_total;
 drop table if exists insumos.rvasexac_adiciona_campos_pagos;

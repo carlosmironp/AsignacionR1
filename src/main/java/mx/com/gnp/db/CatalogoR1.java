@@ -1,4 +1,6 @@
-package mx.com.gnp;
+package mx.com.gnp.db;
+
+import mx.com.gnp.GNPConstants;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -7,33 +9,36 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import scala.Tuple2;
 
-public class Salvamentos implements GNPConstants{
+public class CatalogoR1 implements GNPConstants {
 	
-	public static final int SINIESTRO 	= 2;
-	public static final int AFE			=3;
+	public static final int TV 			= 0;
+	public static final int ARMADORA 	= 1;
+	public static final int CARROCERIA	= 2;
+	public static final int CATEGORIA	= 3;
 	
-private JavaSparkContext sc;
+	private JavaSparkContext sc;
 	
-	public Salvamentos(JavaSparkContext sc){
+	public CatalogoR1(JavaSparkContext sc){
 		this.sc = sc;
 	}
+	
 	/**
-	 * Obtiene los valores para el ingresos nasa, indexado por siniestro
+	 * Obtiene los valores para el catalogo r1, indexado por tv, carroceria y armadora y regresa valores unicos del catalogo
 	 * @return
 	 */
-	public JavaPairRDD<String, String>  getSalvamentos_Unicos(){
-		JavaRDD<String> salvamentos = this. sc.textFile(SALVAMENTOS);
-		JavaPairRDD<String, String> cat_salvamentos = salvamentos.mapToPair(INDEX);
-		JavaPairRDD<String, Iterable<String> > cat_salvamentos_1 = cat_salvamentos.groupByKey();
-		JavaPairRDD<String, String> cat_salvamentos_U = cat_salvamentos_1.mapToPair(UNIQUE_FIRST);
-		return cat_salvamentos_U;
+	public JavaPairRDD<String, String>  getCalogo_R1_Unico(){
+		JavaRDD<String> catalogo_r1=this. sc.textFile(CATALOGO_R1);
+		JavaPairRDD<String, String> catalogoR1 = catalogo_r1.mapToPair(INDEX);
+		JavaPairRDD<String, Iterable<String> > catalogoR1_1 = catalogoR1.groupByKey();
+		JavaPairRDD<String, String> catalogoR1_unique = catalogoR1_1.mapToPair(UNIQUE_FIRST);
+		return catalogoR1_unique;
 	}
 	private static final PairFunction<String, String, String> INDEX = new PairFunction<String, String, String>() {
 		private static final long serialVersionUID = 1L;
 		public Tuple2<String, String> call(String valores) throws Exception {
 			Tuple2<String, String> tupla2 = null;
 			String[] fields = valores.split(WORDS_SEPARATOR_2);
-			tupla2 = new Tuple2<String, String>(fields[SINIESTRO]+fields[AFE], fields[SINIESTRO]);
+			tupla2 = new Tuple2<String, String>(fields[TV]+fields[ARMADORA]+fields[CARROCERIA] , fields[CATEGORIA]);
 			return tupla2;
 		}
 	};

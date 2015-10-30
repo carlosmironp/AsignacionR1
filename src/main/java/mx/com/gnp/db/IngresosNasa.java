@@ -1,4 +1,6 @@
-package mx.com.gnp;
+package mx.com.gnp.db;
+
+import mx.com.gnp.GNPConstants;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -7,35 +9,33 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import scala.Tuple2;
 
-public class Cristales implements GNPConstants {
+public class IngresosNasa implements GNPConstants {
 	
-	public static final int RECLAMA 	= 13;
+	public static final int RECLAMA = 1;
+	
 	private JavaSparkContext sc;
 	
-	public Cristales(JavaSparkContext sc){
+	public IngresosNasa(JavaSparkContext sc){
 		this.sc = sc;
 	}
+	
 	/**
-	 * Obtiene los valores para el CATALOGO DE CRISTALES
+	 * Obtiene los valores para el ingresos nasa, indexado por siniestro
 	 * @return
 	 */
-	public JavaPairRDD<String, String>  getCristales_Unicos(){
-		JavaRDD<String> cristales = this. sc.textFile(CRISTALES);
-		JavaPairRDD<String, String> cat_cristales = cristales.mapToPair(INDEX);
-		JavaPairRDD<String, Iterable<String> > cat_cristales_1 = cat_cristales.groupByKey();
-		JavaPairRDD<String, String> cat_cristales_U = cat_cristales_1.mapToPair(UNIQUE_FIRST);
-		return cat_cristales_U;
+	public JavaPairRDD<String, String>  getIngresosNasa_Unicos(){
+		JavaRDD<String> ingresos_nasa = this. sc.textFile(INGRESOS_NASA);
+		JavaPairRDD<String, String> cat_ingresos_nasa = ingresos_nasa.mapToPair(INDEX);
+		JavaPairRDD<String, Iterable<String> > cat_ingresos_nasa_1 = cat_ingresos_nasa.groupByKey();
+		JavaPairRDD<String, String> cat_ingresos_nasa_unique = cat_ingresos_nasa_1.mapToPair(UNIQUE_FIRST);
+		return cat_ingresos_nasa_unique;
 	}
 	private static final PairFunction<String, String, String> INDEX = new PairFunction<String, String, String>() {
 		private static final long serialVersionUID = 1L;
 		public Tuple2<String, String> call(String valores) throws Exception {
 			Tuple2<String, String> tupla2 = null;
 			String[] fields = valores.split(WORDS_SEPARATOR_2);
-			if(fields.length<14){
-				valores +=WORDS_SEPARATOR_2+" ";
-				fields = valores.split(WORDS_SEPARATOR_2);
-			}
-			tupla2 = new Tuple2<String, String>(fields[RECLAMA], fields.length+"");
+			tupla2 = new Tuple2<String, String>(fields[RECLAMA], fields[RECLAMA]);
 			return tupla2;
 		}
 	};

@@ -58,6 +58,45 @@ row format delimited
 fields terminated by ','
 stored as textfile;
 
+create table insumos.base_cambios_tot(
+CATEGO_R1 	string,
+IDEREG 		bigint,
+RECLAMA 	string,
+CVE_PER 	string,
+CTO_MTO 	string,
+CTO_MTO2 	string,
+FEC_OCU 	int,
+FEC_MOV 	int,
+AFE 		string,
+COB 		string,
+CERO 		string,
+DIAS 		int,
+R1 			string,
+IMP_MTO 	decimal(12,2),
+SALDO 		decimal(12,2),
+CTO1 		string,
+IMP1 		decimal(12,2),
+SALDO1 		decimal(12,2),
+R1_B 		string,
+FEC_MOV1 	int,
+DIAS1 		int,
+R1_NUEVA 	decimal(12,2),
+FECMOV2 	int,
+ES_R1 		string,
+CONSECU 	string,
+CASO 		string,
+DEPURA 		string,
+CUENTA 		string,
+REGIS_NVO	string,
+CRIS		string,
+RECONS 		string
+)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+
 LOAD DATA INPATH '/reconstruccion/rvasexac_id' OVERWRITE INTO TABLE insumos.rvasexac_spark;
 LOAD DATA INPATH '/reconstruccion/base_r1_spark' OVERWRITE INTO TABLE insumos.base_r1_spark;
 LOAD DATA INPATH '/reconstruccion/base_r1_casos_spark' OVERWRITE INTO TABLE insumos.base_r1_casos_spark;
+LOAD DATA INPATH '/reconstruccion/base_cambios_tot_spark' OVERWRITE INTO TABLE insumos.base_cambios_tot;
