@@ -209,10 +209,14 @@ public class App {
     	JavaPairRDD<String, Iterable<String>> base_r1_42 = rvasexacOps.saldo1(base_r1_41);
     	JavaPairRDD<String,String> base_r1_43 = rvasexacOps.desagrupaValores(base_r1_42);
     	
+    	//Filtramos los movimientos sinteticos
     	JavaPairRDD<String,String> base_r1_43_2 = rvasexacOps.filtraSinteticos(base_r1_43);
+    	//Filtramos aquellos ultimos movimientos que su saldo es +- 5 pesos
+    	//JavaPairRDD<String,String> base_r1_43_3 = rvasexacOps.filtraSaldo5Pesos(base_r1_43_2);
+    	
+    	
     	//Ponemos la base final con los casos en el formato de struct depura
     	JavaPairRDD<String,String> base_r1_44 = rvasexacOps.strucDepura(base_r1_43_2);
-    	
     	
     	
     	//Primer punto de control para totalizar y revisar Casos de base_r1

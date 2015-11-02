@@ -1584,6 +1584,25 @@ public class RvasexacOperations implements GNPConstants{
 		}
 	};
 	
+	/**
+	 * Filtra los aquellos movimientos en los cuales su importe es +- 5 pesos
+	 * @param rvasexac
+	 * @return
+	 */
+	public JavaPairRDD<String, String> filtraSaldo5Pesos(JavaPairRDD<String,String> rvasexac){
+		return rvasexac.filter(FILTER_5_PESOS);
+		
+	}
+	private static final Function<Tuple2<String, String>, Boolean> FILTER_5_PESOS = new Function<Tuple2<String, String>, Boolean>() {
+		private static final long serialVersionUID = 1L;
+		public Boolean call(Tuple2<String, String> keyValue) throws Exception {
+			String[] record = keyValue._2.split(WORDS_SEPARATOR);
+			String r1 = record[R1];
+			Double imp_mto = Double.parseDouble(record[IMP_MTO]);
+			return ( !r1.equals(ULTIMO_MOVIMIENTO) && Math.abs(imp_mto)>1);
+		}
+	};
+	
 	
 	private static String mapCasoSintetico(String[] fields, String cto_mto){
 		return fields[ID]+WORDS_SEPARATOR+ 
