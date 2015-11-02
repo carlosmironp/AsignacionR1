@@ -1,75 +1,42 @@
 use insumos;
 
 
-drop table if exists insumos.base_cambios_tot_ant_ca;
-drop table if exists insumos.base_r1_ca_Recons_Ante;
-drop table if exists insumos.base_cambios_tot;
-drop table if exists insumos.rvas_limpio_esta_c;
 drop table if exists insumos.rvasexac_sin_ingresos;
 drop table if exists insumos.base_cambios_tot_rec_campos;
+drop table if exists insumos.prop_periodo;
+drop table if exists insumos.base_cambios_tot_rec_campos2;
+drop table if exists insumos.historias_cristales;
+drop table if exists insumos.base_cambios_to_cris_t;
+drop table if exists insumos.es_cero_cto_o;
+drop table if exists insumos.no_r2_saldos;
+drop table if exists insumos.base_cambios_to_cris_t_2;
 drop table if exists insumos.base_cambios_tot_camb_proceden;
-drop table if exists insumos.rvas_limpio_marca_periodos;
-drop table if exists insumos.rvas_limpio_para_borrar;
-drop table if exists insumos.rvasexac_c30_ca;
-drop table if exists insumos.rvasexac_c30_ca_tot;
-drop table if exists insumos.base_cambios_tot_ant_ca_l;
-drop table if exists insumos.siniestros_huracanes_final_31032015_l;
-drop table if exists insumos.rvasexac_sin_cat_antes_mov20141025_ca;
+drop table if exists insumos.base_cambios_tot_camb_proceden_borrar;
+drop table if exists insumos.base_cambios_tot_camb_proceden_limpia;
+drop table if exists insumos.rvasexac_original_limpia_periodos;
+drop table if exists insumos.propaga_marca_periodos;
+drop table if exists insumos.rvasexac_limpio_periodos;
+drop table if exists insumos.rvasexac_limpia_esta_c;
+drop table if exists insumos.base_cambios_tot_index;
+drop table if exists insumos.rvasexac_para_borrar;
+drop table if exists insumos.rvasexac_c30;
+drop table if exists insumos.base_cambios;
+drop table if exists insumos.rvasexac_c30_union_base_cambios;
+drop table if exists insumos.catastroficos_unicos;
+drop table if exists insumos.rvasexac_c30_marca_catastroficos;
+drop table if exists insumos.rvasexac0515_sin_cat_antes_mov20141025;
 drop table if exists insumos.ri_25102014_ca;
 drop table if exists insumos.ri_20141025_todos_mov_ca;
-drop table if exists insumos.ri_20141025_mov_ant_ca;
-drop table if exists insumos.ri_20141025_mov_ant_ca;
+drop table if exists insumos.reclamaciones_anteriores;
 drop table if exists insumos.tot_mov_nac_20141025_ca;
-drop table if exists insumos.rvasexac_sin_cat_reconstruccion_final_ca;
-
-
- -- De la base anterior sacamos los campos que solo corresponden para que podamos hacer el union
-create table insumos.base_cambios_tot_ant_ca as 
-select * from insumos.dm_1213
-union 
-select *,'' as cris from insumos.gm_1213
-union 
-select *,'' as cris from insumos.rc_1213
-union 
-select *,'' as cris from insumos.rt_1213;
-compute stats insumos.base_cambios_tot_ant_ca;
-
-
--- Calculamos cuantas llaves de la reconstruccion actual estan en la base_anterior_unida 
-create table insumos.base_r1_ca_Recons_Ante as 
-select base_r1_spark.reclama,base_r1_spark.cob,base_r1_spark.afe, count(*) from base_cambios_tot_ant_ca bases_ant
-join  insumos.base_r1_casos_spark base_r1_spark on 
-base_r1_spark.reclama=bases_ant.reclama and base_r1_spark.cob=bases_ant.cob and base_r1_spark.afe=bases_ant.afe
-group by base_r1_spark.reclama,base_r1_spark.cob,base_r1_spark.afe;
-
--- Base anterior sin los movimientos que estamos reconstruyendo
-create table insumos.base_cambios_tot_ant_ca_l as
-select ant.* from base_cambios_tot_ant_ca ant
-left join insumos.base_r1_ca_Recons_Ante ra on ra.cob=ant.cob and ra.reclama=ant.reclama and ra.afe=ant.afe
-where ra.reclama is null;
-
-
---Hacemos un union entre la base_r1_ca_cob_ant_limpio y base_r10515_cloudera_saldo bases_unidas_tot
-create table insumos.base_cambios_tot as
-select 
-0 as id, ant.catego_r1,cast(ant.idereg as bigint) as idereg,ant.reclama,ant.cve_per,ant.cto_mto,ant.cto_mto2,ant.fec_ocu,
-ant.fec_mov,ant.afe,ant.cob,ant.cero,ant.dias,ant.r1,ant.imp_mto,ant.saldo,ant.cto1,ant.imp1,ant.saldo1,
-ant.r1_b,ant.fec_mov1,ant.dias1,cast(ant.r1_nueva as decimal(12,2)) as r1_nueva,cast (ant.fecmov2 as bigint) as fec_mov2,
-ant.es_r1,ant.consecu,ant.caso,ant.depura,ant.cuenta,ant.regis_nvo,' ' as fte_info
-from insumos.base_cambios_tot_ant_ca_l ant
-union
-select 
-cloud.id, cloud.catego_r1,cast(cloud.idereg as bigint) as idereg,cloud.reclama,cloud.cve_per,cloud.cto_mto,cloud.cto_mto2,cloud.fec_ocu,
-cloud.fec_mov,cloud.afe,cloud.cob,'' as cero,cloud.dias,cloud.r1,cloud.imp_mto,cloud.saldo,'' as cto1,
-cloud.imp1,cloud.saldo1,'' as r1_b,null as fec_mov1,null as dias1,cast(cloud.r1_nueva as decimal(12,2)),
-cast(cloud.fec_mov as bigint) as fec_mov2,'' es_r1,'' as consecu,cloud.caso,'' as depura,null as cuenta,'' as regis_nvo, cloud.fte_info
-from insumos.base_r1_casos_spark cloud;
+drop table if exists insumos.rvasexac0515_sin_cat_antes_mov20141025_2;
+drop table if exists insumos.rvasexac_sin_cat_reconstruccion_final;
 
 -- Filtramos de revas limpio los ingresos y guardamos la tabla temporal en
 create table insumos.rvasexac_sin_ingresos as
 select * from rvasexac_accion where accion<>'IN' and accion<>'NC';
 
--- Recuperamos los campos calculados en limpia revas aqui pudimos hacer join por el idereg lo cual facilito la relacion uno a uno
+-- Recuperamos los campos calculados en limpia revas aqui pudimos hacer join por el idereg,cto_mto y fec_mov lo cual facilito la relacion uno a uno
 create table insumos.base_cambios_tot_rec_campos as
 select 
 rt.catego_r1,rt.idereg, rt.reclama,rt.cve_per,
@@ -78,30 +45,26 @@ rt.fec_ocu,rt.fec_mov,rt.afe,rt.cob,rt.cero,rt.dias,rt.r1,
 rt.imp_mto as imp_to_o,
 rt.saldo, rt.cto1,
 rt.saldo1,rt.r1_b,rt.fec_mov1,
-rt.r1_nueva,rt.fec_mov2,rt.es_r1,rt.consecu,rt.caso,
+rt.r1_nueva,rt.fecmov2,rt.es_r1,rt.consecu,rt.caso,
 rt.cuenta,rt.regis_nvo,rsi.cris,rsi.csubramo,rsi.fte_info,
 rsi.poliza,rsi.cau_cto,rsi.ramo,rsi.noape,rsi.mov_pagos,
 rsi.pag_dif_c,rsi.es_cero,rsi.litigio,
 case 
   when rt.fec_mov>=20150501 then 'S'
-  else ' '
 end as mov_pos,
 case
-  when (rt.cto_mto='RI' and rt.fec_mov>=20150501) then 'A'
-  else ' '
+  when (rt.cto_mto='RI' and rt.fec_mov>=20150601) then 'A'
 end as c12,
 case
-  when (rt.cto_mto='RI' and rt.fec_mov>=20130701) then 'B'
-  else ' '
+  when (rt.cto_mto='RI' and rt.fec_mov>=20130601) then 'B'
 end as c24,
 case
-  when rt.cto_mto='RI' and rt.fec_mov>20120101 then 'C'
-  else ' '
+  when rt.cto_mto='RI' and rt.fec_mov>20121201 then 'C'
 end as c30,
 case 
    when (rt.cto_mto='RI' and rt.fec_mov>=20150501) then 'ABC'
-   when (rt.cto_mto='RI' and rt.fec_mov>=20130701) then 'BC'
-   when rt.cto_mto='RI' and rt.fec_mov>20120101 then 'C' 
+   when (rt.cto_mto='RI' and rt.fec_mov>=20130501) then 'BC'
+   when rt.cto_mto='RI' and rt.fec_mov>20121201 then 'C' 
 end as llave,
 rsi.menor_6,
 rsi.accion,
@@ -123,61 +86,214 @@ left join rvasexac_sin_ingresos rsi on
 rsi.reclama=rt.reclama and rsi.cob=rt.cob and rsi.afe=rt.afe
 and cast(rsi.idereg as bigint)=rt.idereg and rsi.fec_mov=rt.fec_mov and rsi.cto_mto=rt.cto_mto;
 
+-- Propagar el c12,24 o 30
+create table insumos.prop_periodo as
+select * from base_cambios_tot_rec_campos
+where llave is not null;
+
+create table insumos.base_cambios_tot_rec_campos2 as
+select  
+a.catego_r1,a.idereg,a.reclama,a.cve_per,
+a.cto_mto_o,a.fec_ocu,a.fec_mov,a.afe,
+a.cob,a.cero,a.dias, a.r1,a.imp_to_o as imp_mto_o,
+a.saldo,a.cto1,a.saldo1,a.r1_b,a.fec_mov1,
+a.r1_nueva,a.fecmov2,a.es_r1,a.consecu,
+a.caso, a.cuenta,
+a.regis_nvo,a.cris,a.csubramo,a.fte_info,
+a.poliza, a.cau_cto, a.ramo,a.noape,a.mov_pagos,
+a.pag_dif_c,a.es_cero,a.litigio,a.mov_pos,
+b.c12,
+b.c24,
+b.c30,
+b.llave,
+a.menor_6,a.accion,a.es_rvas,a.tpomovexa,
+a.imp_mto,a.imp1,a.cto_mto
+from base_cambios_tot_rec_campos a 
+left join prop_periodo b on 
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe;
+
+
+-- Propagamos la marca de cristal a los demas movimientos en cada historia
+create table insumos.historias_cristales as 
+select reclama, cob, afe, count(*) 
+from base_cambios_tot_rec_campos2
+where cris ='S' group by reclama, cob, afe;
+
+create table insumos.base_cambios_to_cris_t as
+select tot.*, 
+case
+  when cris.reclama is not null then 'S'
+end as cris_t
+from base_cambios_tot_rec_campos2 tot
+left join historias_cristales cris on cris.reclama=tot.reclama and cris.cob=tot.cob and cris.afe=tot.afe;
+
+
+
+-- NO R2
+create table insumos.es_cero_cto_o as 
+select reclama, cob, afe, count(*) as movs  from base_cambios_to_cris_t
+where es_cero='S' and cto_mto is not null 
+group by reclama, cob, afe
+having movs=2;
+
+-- Marcamos las no R2
+create table insumos.no_r2_saldos as 
+select 
+a.*
+from base_cambios_to_cris_t a
+left join es_cero_cto_o b on
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe
+where b.reclama is not null and a.cto_mto='RI';
+
+--Marcamos la no_r2 ya con su importe ajusta pora netearlas a cero
+create table insumos.base_cambios_to_cris_t_2 as
+  select 
+a.catego_r1,a.idereg,a.reclama,a.cve_per,a.cto_mto_o,a.fec_ocu,
+a.fec_mov,a.afe,a.cob,a.cero,a.dias,
+case 
+   when b.reclama is not null and a.cto_mto='A-' and a.r1='U' then ' '
+   else a.r1
+end as r1,
+a.imp_mto_o,a.saldo,a.cto1,a.saldo1,a.r1_b,a.fec_mov1,a.r1_nueva,
+a.fecmov2,a.es_r1,a.consecu,a.caso,a.cuenta,a.regis_nvo,a.cris,
+a.csubramo,a.fte_info,a.poliza,a.cau_cto,a.ramo,a.noape,a.mov_pagos,
+a.pag_dif_c,a.es_cero,a.litigio,a.mov_pos,a.c12,a.c24,a.c30,a.llave,
+a.menor_6,a.accion,a.es_rvas,a.tpomovexa,
+case 
+   when b.reclama is not null and a.cto_mto='A-' and a.r1='U' then (b.saldo1*(-1))
+   else a.imp_mto
+end as imp_mto,
+case 
+   when b.reclama is not null and a.cto_mto='A-' and a.r1='U' then (b.saldo1*(-1))
+   else a.imp1
+end as imp1,
+a.cto_mto,
+a.cris_t,
+case 
+   when b.reclama is not null then 'X'
+end as no_r2
+from base_cambios_to_cris_t a
+left join no_r2_saldos b on
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe;
+
+
+
 -- Sacamos a base cambios los movimientos que proceden y que se van a sustituir como lo marca el procedimiento cambios proceden
 create table insumos.base_cambios_tot_camb_proceden as 
-select *  from base_cambios_tot_rec_campos base_cambios_tot 
-where base_cambios_tot.imp1<>0 and base_cambios_tot.mov_pos<>'S' and base_cambios_tot.es_rvas='S';
+select *  from base_cambios_to_cris_t_2 base_cambios_tot 
+where base_cambios_tot.imp1<>0 and base_cambios_tot.mov_pos is null and base_cambios_tot.es_rvas='S';
 
+--Identificamos aquellos movimientos para borrar que no se tomaran encuenta 
+create table insumos.base_cambios_tot_camb_proceden_borrar as
+select reclama, cob, afe, count(*) from base_cambios_tot_camb_proceden
+where cob='DM' and menor_6='S' and cris_t<>'S' and es_cero='S' and pag_dif_c<>'S'
+group by reclama, cob, afe;
 
--- Marcacmos los periodos en el rvas limpio 
-create table insumos.rvas_limpio_marca_periodos as
-select rvas_limpio.*, 
+--Quitamos los movimientos 
+create table insumos.base_cambios_tot_camb_proceden_limpia as
+select a.* from base_cambios_tot_camb_proceden a
+left join base_cambios_tot_camb_proceden_borrar  b on
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe
+where b.reclama is null;
+
+-- Marcamos los periodos en el rvasexac limpio original
+create table insumos.rvasexac_original_limpia_periodos as 
+select *,
 case
-  when (rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>=20150501)  then 'A'
-  else ' '
+  when (cto_mto='RI' and fec_mov>=20150601) then 'A'
 end as c12,
 case
-  when (rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>=20130701) then 'B'
-  else ' '
+  when (cto_mto='RI' and fec_mov>=20130601) then 'B'
 end as c24,
 case
-  when rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>20120101 then 'C'
-  else ' '
+  when cto_mto='RI' and fec_mov>20121201 then 'C'
 end as c30,
 case 
-   when (rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>=20150501) then 'ABC'
-   when (rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>=20130701) then 'BC'
-   when rvas_limpio.cto_mto='RI' and rvas_limpio.fec_mov>20120101 then 'C' 
+   when (cto_mto='RI' and fec_mov>=20150601) then 'ABC'
+   when (cto_mto='RI' and fec_mov>=20130601) then 'BC'
+   when cto_mto='RI' and  fec_mov>20121201 then 'C' 
 end as llave
-from rvasexac_accion rvas_limpio;
+from rvasexac_accion;
 
--- calculamos el campo esta_c sobre reservas limpio
-create table insumos.rvas_limpio_esta_c as
-select rl.*,
-case 
-  when bc.reclama is not null and ( rl.cto_mto<>'IN' AND rl.cto_mto<>'IS' AND rl.cto_mto<>'RS' AND rl.accion<>'NC') then 'S'
-  else ''
-end esta_c
-from rvas_limpio_marca_periodos rl
-left join base_cambios_tot_camb_proceden bc on
-bc.reclama=rl.reclama and bc.cob=rl.cob and bc.afe=rl.afe and bc.fec_mov=rl.fec_mov and bc.idereg=cast(rl.idereg as bigint);
+-- Sacamos del rvas limpio con los periodos marcados aqullos movimientos donde su llave NO sea null y generamos un indice
+create table insumos.propaga_marca_periodos as
+select * from rvasexac_original_limpia_periodos 
+where llave is not null;
+
+--Propagamos la marca del periodo a los demas movimientos de cada historia
+create table insumos.rvasexac_limpio_periodos as 
+select 
+a.cau_cto,
+a.reclama,
+a.poliza,
+a.cto_mto,
+a.cto_mto_o,
+a.fec_ocu,
+a.fec_mov,
+a.afe,
+a.ramo,
+a.imp_mto,
+a.idereg,
+a.cob,
+a.tpomovexa,
+a.fecrepexa,
+a.noape,
+a.cve_per,
+a.csubramo,
+a.fte_info,
+a.fec_fin,
+a.fec_ini,
+a.litigio,
+a.menor_6,
+a.mov_pagos,
+a.pag_dif_c,
+a.es_cero,
+a.cris,
+a.accion,
+a.p_men_6,
+b.c12,
+b.c24,
+b.c30,
+b.llave
+from 
+rvasexac_original_limpia_periodos a
+left join propaga_marca_periodos b on
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe;
+
+--Marcamos en el rvas original limpio aquellos movimientos que tambien estan el la reconstrccion
+create table insumos.base_cambios_tot_index as
+select reclama, cob, afe, count(*) as movs from base_cambios_tot_camb_proceden_limpia
+group by reclama, cob, afe;
+
+create table insumos.rvasexac_limpia_esta_c as
+select a.*,
+case
+   when b.reclama is not null and ( a.cto_mto<>'IN' AND a.cto_mto<>'IS' AND a.cto_mto<>'RS' AND a.accion<>'NC') then 'S'
+end as esta_c
+from rvasexac_limpio_periodos a
+left join base_cambios_tot_index b on 
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe;
+
+--Estos movimientos se van a borrar del rvas original ya que son los movimientos que estan reconstruidos
+create table insumos.rvasexac_para_borrar as 
+select * from rvasexac_limpia_esta_c
+where (c30='C' and accion='SA') OR (c30='C' and accion='CA' and esta_c='S');
+
+--Del rvas original limpiamos los registros que estamos reconstruyendo y generemos la base a 30 meses
+create table insumos.rvasexac_c30 as
+select a.* from rvasexac_limpia_esta_c a
+left join rvasexac_para_borrar b on 
+a.reclama=b.reclama and a.cob=b.cob and a.afe=b.afe and a.fec_mov=b.fec_mov and cast(a.idereg as string)=b.idereg and a.cto_mto=b.cto_mto
+where b.reclama is null;
 
 
-create table insumos.rvas_limpio_para_borrar as
-select reclama,cob, afe, count(*) as cuenta from rvas_limpio_esta_c
-where (c30='C' and accion='SA') OR (c30='C' and accion='CA' and esta_c='S')
-group by reclama,cob, afe;
+--Base cambios son los movimientos reconstruidos NOTA que aqui solo se esta llevando las RI, cabezas de las historias de movimientos 
+create table insumos.base_cambios as 
+select * from base_cambios_tot_camb_proceden_limpia
+where c30='C' and es_rvas='S';
 
-
--- Una vez calculado el campo esta_c filtramos para obtener rvasexac_c30_ca
-create table insumos.rvasexac_c30_ca as 
-select rl.* from rvas_limpio_esta_c rl
-left join rvas_limpio_para_borrar borrar on 
-borrar.reclama=rl.reclama and borrar.cob=rl.cob and borrar.afe=rl.afe
-where borrar.reclama is null;
-
--- unimos rvasexac_c30 y base cambios tot proceden
-create table insumos.rvasexac_c30_ca_tot as 
+-- Unimos ambas bases para obtener la base rvas original mas los movimientos (primer movimiento) que ya reconstruimos
+create table insumos.rvasexac_c30_union_base_cambios as 
 select 
 c_30.cau_cto,
 c_30.reclama,
@@ -187,7 +303,7 @@ c_30.cto_mto_o,
 c_30.fec_ocu,
 c_30.fec_mov,
 c_30.afe,
-c_30.ramo,
+'R' as ramo,
 c_30.imp_mto,
 cast(c_30.idereg as bigint) as idereg,
 c_30.cob,
@@ -212,7 +328,7 @@ c_30.c24,
 c_30.c30,
 c_30.llave,
 c_30.esta_c
-from rvasexac_c30_ca c_30
+from insumos.rvasexac_c30 c_30
 union 
 select 
 bct_cp.cau_cto,
@@ -223,7 +339,9 @@ bct_cp.cto_mto_o,
 bct_cp.fec_ocu,
 bct_cp.fec_mov,
 bct_cp.afe,
-bct_cp.ramo,
+case
+   when bct_cp.ramo <> 'R' then 'C'
+end as ramo,
 bct_cp.imp1 as imp_mto,
 bct_cp.idereg,
 bct_cp.cob,
@@ -248,40 +366,72 @@ bct_cp.c24,
 bct_cp.c30,
 bct_cp.llave,
 '' as esta_c
-from base_cambios_tot_camb_proceden bct_cp where  bct_cp.c30='C' and bct_cp.es_rvas='S';
+from insumos.base_cambios bct_cp;
 
--- Marca y eliminamos los catastroficos
-create table insumos.siniestros_huracanes_final_31032015_l as 
-select reclama, fte_info, count(*) as cuenta from siniestros_huracanes_final_31032015 group by reclama,fte_info;
-
-create table insumos.rvasexac_sin_cat_antes_mov20141025_ca as
+-- Guarda los catastroficos y  los pone en un indice
+create table insumos.catastroficos_unicos as 
 select 
-c_30.*
-from rvasexac_c30_ca_tot c_30
-left join siniestros_huracanes_final_31032015_l cat on cat.reclama=c_30.reclama and cat.fte_info=c_30.fte_info
-where cat.reclama is null;
+reclama,
+fte_info,
+count(*) as cuenta
+from siniestros_huracanes_final_31032015
+group by reclama, fte_info;
+
+-- Marca las historias que son catastroficos en la base de rvasexac_30 unida con base cambios
+create table insumos.rvasexac_c30_marca_catastroficos as
+select 
+a.*,
+case
+   when b.reclama is not null then 'X'
+end as cat
+from rvasexac_c30_union_base_cambios a
+left join catastroficos_unicos b on a.reclama=b.reclama and a.fte_info=b.fte_info;
+
+-- Solo copiamos a una base las historias que no son catastroficos
+create table insumos.rvasexac0515_sin_cat_antes_mov20141025 as
+select * from rvasexac_c30_marca_catastroficos
+where cat is null;
 
 
--- movimientos programa
+
+-- PROGRAMA MOVIMIENTOS  Obtenemos las RI que fueron posterior a la fecha de cambio de operacion
 create table insumos.ri_25102014_ca as 
 select distinct reclama from rvasexac0515 
 where cto_mto='RI' and fec_mov>=20141025;
 
-create table ri_20141025_todos_mov_ca as 
+-- Obtenemos todos los movimientos de las RI posteriores ala fecha de operacion
+create table insumos.ri_20141025_todos_mov_ca as 
 select rvas.* from insumos.ri_25102014_ca ri 
 left join rvasexac0515 rvas on ri.reclama=rvas.reclama;
 
-create table insumos.ri_20141025_mov_ant_ca as
-select * from ri_20141025_todos_mov_ca where fec_mov<20141025;
+--Identificamos aquellas reclamaciones que fueron antes del cambio de operacion
+create table insumos.reclamaciones_anteriores as 
+select distinct reclama from ri_20141025_todos_mov_ca
+where fec_mov < 20141025;
 
+--Copiamos solo aquellos movimientos que no son movimientos anteriores
 create table insumos.tot_mov_nac_20141025_ca as 
-select todos.* from ri_20141025_todos_mov_ca todos 
-left join ri_20141025_mov_ant_ca ant on ant.reclama=todos.reclama
-where ant.reclama is null;
+select a.* 
+from ri_20141025_todos_mov_ca a
+left join reclamaciones_anteriores b on a.reclama=b.reclama
+where b.reclama is null;
 
+--Quitamos los movimientos posteriores
+create table insumos.rvasexac0515_sin_cat_antes_mov20141025_2 as
+select a.*
+from rvasexac0515_sin_cat_antes_mov20141025 a
+left join tot_mov_nac_20141025_ca b on
+a.reclama=b.reclama and 
+a.cob=b.cob and 
+a.afe=b.afe and 
+a.fte_info=b.fte_info and 
+a.fec_mov=b.fec_mov and 
+cast(a.idereg as string)=b.idereg and 
+a.cto_mto=b.cto_mto
+where b.reclama is null;
 
--- Unimos las bases finales 
-create table insumos.rvasexac_sin_cat_reconstruccion_final_ca as
+-- SE GENERA LA BASE FINAL
+create table insumos.rvasexac_sin_cat_reconstruccion_final as
 select  
 sin_cat.reclama,
 sin_cat.poliza,
@@ -317,7 +467,7 @@ sin_cat.ramo,
 '' as cat,
 '' as mov_man
 from 
-rvasexac_sin_cat_antes_mov20141025_ca sin_cat
+rvasexac0515_sin_cat_antes_mov20141025_2 sin_cat
 union 
 select 
 tot.reclama,
@@ -354,24 +504,3 @@ tot.ramo,
 '' as cat,
 '' as mov_man
 from tot_mov_nac_20141025_ca tot;
-
--- BOrramos las bases que no son necesarias
----drop table if exists insumos.dm2_1213_ca;
-drop table if exists insumos.base_cambios_tot_ant_ca;
-drop table if exists insumos.base_r1_ca_Recons_Ante;
-drop table if exists insumos.base_cambios_tot;
-drop table if exists insumos.rvasexac_sin_ingresos;
-drop table if exists insumos.base_cambios_tot_camb_proceden;
-drop table if exists insumos.rvas_limpio_marca_periodos;
-drop table if exists insumos.rvas_limpio_para_borrar;
-drop table if exists insumos.rvasexac_c30_ca;
-drop table if exists insumos.siniestros_huracanes_final_31032015_l;
-drop table if exists insumos.rvasexac_sin_cat_antes_mov20141025_ca;
-drop table if exists insumos.ri_25102014_ca;
-drop table if exists insumos.ri_20141025_todos_mov_ca;
-drop table if exists insumos.ri_20141025_mov_ant_ca;
-drop table if exists insumos.ri_20141025_mov_ant_ca;
-drop table if exists insumos.tot_mov_nac_20141025_ca;
-drop table if exists insumos.base_r1_ca_adi_campos;
-drop table if exists insumos.base_cambios_tot_ant_ca_l;
-drop table if exists insumos.base_r1__spark_temp;

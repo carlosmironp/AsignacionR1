@@ -3,6 +3,7 @@ use insumos;
 drop table if exists insumos.rvasexac_spark;
 drop table if exists insumos.base_r1_spark;
 drop table if exists insumos.base_r1_casos_spark;
+drop table if exists insumos.base_cambios_tot;
 
 
 create table insumos.rvasexac_spark

@@ -209,12 +209,14 @@ public class App {
     	JavaPairRDD<String, Iterable<String>> base_r1_42 = rvasexacOps.saldo1(base_r1_41);
     	JavaPairRDD<String,String> base_r1_43 = rvasexacOps.desagrupaValores(base_r1_42);
     	
+    	JavaPairRDD<String,String> base_r1_43_2 = rvasexacOps.filtraSinteticos(base_r1_43);
     	//Ponemos la base final con los casos en el formato de struct depura
-    	JavaPairRDD<String,String> base_r1_44 = rvasexacOps.strucDepura(base_r1_43);
+    	JavaPairRDD<String,String> base_r1_44 = rvasexacOps.strucDepura(base_r1_43_2);
+    	
     	
     	
     	//Primer punto de control para totalizar y revisar Casos de base_r1
-    	base_r1_43.values().saveAsTextFile(PATH_CASOS_CSV_HDFS);
+    	base_r1_43_2.values().saveAsTextFile(PATH_CASOS_CSV_HDFS);
     	
     	//Actualiza meses
     	ActualizaMeses actualizaMeses = new ActualizaMeses(sc);
@@ -228,8 +230,8 @@ public class App {
     	
     	base_r1_46.values().saveAsTextFile(PATH_BASE_CAMBIOS_TOT_CSV_HDFS);
     	
-    	System.out.println("base_r1_46 contiene "+base_r1_46.count()+" registros");
-    	System.out.println(base_r1_46.take(10));
+//    	System.out.println("base_r1_46 contiene "+base_r1_46.count()+" registros");
+//    	System.out.println(base_r1_46.take(10));
     	
     	sc.close();
     }

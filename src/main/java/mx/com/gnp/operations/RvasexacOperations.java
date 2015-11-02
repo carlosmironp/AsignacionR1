@@ -1405,7 +1405,9 @@ public class RvasexacOperations implements GNPConstants{
 					saldo1 = sini;
 				}else if(cto_mto2.equals(A_MENOS) && saldo==0 && dias>=dif_dias_wk && dias < RANGO){
 					caso = G;
-					imp1 = 0.0 ;
+					//Es el original y hay que revisar por que estando asi no cuadra
+					//imp1 = 0.0 ;
+					imp1 = sini*(-1);
 					sini += imp1;
 					saldo1 = sini;
 				}else if(cto_mto2.equals(A_MENOS) && saldo != sini && saldo != 0){
@@ -1459,6 +1461,7 @@ public class RvasexacOperations implements GNPConstants{
 					}
 					String fields_s[] = ms.split(WORDS_SEPARATOR);
 					Double saldo2 = Double.parseDouble(fields_s[SALDO]);
+					
 					sinteticMov = mapCasoSintetico(fields_s, A_MAS);
 					
 					sinteticMov += WORDS_SEPARATOR + String.format(Locale.ENGLISH, "%.2f", saldo2)  + WORDS_SEPARATOR +
@@ -1563,6 +1566,23 @@ public class RvasexacOperations implements GNPConstants{
 	};
 	
 	
+	/**
+	 * Filtra los movimientos sinteticos
+	 * @param rvasexac
+	 * @return
+	 */
+	public JavaPairRDD<String, String> filtraSinteticos(JavaPairRDD<String,String> rvasexac){
+		return rvasexac.filter(FILTER_SINTETICOS);
+		
+	}
+	private static final Function<Tuple2<String, String>, Boolean> FILTER_SINTETICOS = new Function<Tuple2<String, String>, Boolean>() {
+		private static final long serialVersionUID = 1L;
+		public Boolean call(Tuple2<String, String> keyValue) throws Exception {
+			String[] record = keyValue._2.split(WORDS_SEPARATOR);
+			String caso = record[CASO];
+			return ( !caso.equals(LS));
+		}
+	};
 	
 	
 	private static String mapCasoSintetico(String[] fields, String cto_mto){

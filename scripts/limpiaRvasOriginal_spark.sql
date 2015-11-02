@@ -19,7 +19,7 @@ drop table if exists insumos.cristales_2010_2015_0915_l;
 --Adiciona campos
 create table insumos.rvasexac_adiciona_campos as
 	select 
-rvas.id, rvas.reclama,rvas.poliza,rvas.cto_mto as cto_mto_o,
+ rvas.reclama,rvas.poliza,rvas.cto_mto as cto_mto_o,
 case
  when cto_mto='CP'  or cto_mto='PP'   or  cto_mto='PF' then 'PP'
  else cto_mto
@@ -29,7 +29,7 @@ rvas.ramo,rvas.imp_mto,rvas.idereg,rvas.cob,rvas.tpomovexa,
 rvas.fecrepexa,rvas.noape,rvas.cve_per,
 rvas.csubramo,rvas.fte_info,rvas.fec_fin,rvas.fec_ini,
 rvas.litigio
-from rvasexac_spark rvas; 
+from rvasexac0515 rvas; 
 compute stats insumos.rvasexac_adiciona_campos;
 
 --Totaliza pagos 
@@ -43,7 +43,7 @@ compute stats insumos.rvasexac_pagos_total;
 --Calcula campos pagos
 create table insumos.rvasexac_adiciona_campos_pagos as
 select 
-ac.id, ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.fec_ocu,ac.fec_mov,ac.cto_mto_o,
+ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.fec_ocu,ac.fec_mov,ac.cto_mto_o,
 ac.afe,ac.ramo,ac.imp_mto,ac.idereg,ac.cob,
 ac.tpomovexa,ac.fecrepexa,ac.noape,ac.cve_per,
 ac.csubramo,ac.fte_info,ac.fec_fin,ac.fec_ini,
@@ -71,7 +71,7 @@ group by reclama, cob, afe, fte_info;
 --Calcula campos es_cero
 create table insumos.rvasexac_es_cero as
 select 
-ac.id, ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
+ac.cau_cto, ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
 ac.afe,ac.ramo,ac.imp_mto,ac.idereg,ac.cob,
 ac.tpomovexa,ac.fecrepexa,ac.noape,ac.cve_per,
@@ -95,7 +95,7 @@ group by reclama, cob, afe, fte_info;
 --Calcula ri menor 6000
 create table insumos.rvasexac_menor_6 as
 select 
-ac.id, ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
+ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
 ac.afe,ac.ramo,ac.imp_mto,ac.idereg,ac.cob,
 ac.tpomovexa,ac.fecrepexa,ac.noape,ac.cve_per,
@@ -153,7 +153,7 @@ left join terminados_l term on term.reclama_b=rvas.reclama;
 --Calcula la accion a tomar para la reconstruccion
 create table insumos.rvasexac_accion as
 select
-ac.id, ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
+ac.cau_cto,ac.reclama,ac.poliza,ac.cto_mto,ac.cto_mto_o,
 ac.fec_ocu,ac.fec_mov,
 ac.afe,ac.ramo,ac.imp_mto,ac.idereg,ac.cob,
 ac.tpomovexa,ac.fecrepexa,ac.noape,ac.cve_per,
